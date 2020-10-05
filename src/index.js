@@ -1,14 +1,28 @@
-const nodeFetch = require('node-fetch')
+import nodeFetch from 'node-fetch'
 const fetch = require('fetch-cookie')(nodeFetch)
-const { URLSearchParams } = require('url');
+import { URLSearchParams } from 'url'
+import _ from 'lodash';
+import servers from './servers.js'
+import fs from 'async-file'
 
-const USERNAME = 'lees'
-const PASSWORD = 'JTVCREx1NnMuJTNEZHNaakRLOQ=='
+const USERNAME = ''
+const PASSWORD = ''
 
-const ACCOUNT_NAME = 'tpicap-dev'
+const ACCOUNT_NAME = ''
 const SUBDOMAIN = 'tpicap-dev'
 
-let XCSRFHEADER
+let XCSRFHEADER;
+
+let COOKIES;
+
+const storeCookies = (response) => {
+  const raw = response.headers.raw()['set-cookie'];
+  COOKIES = raw.map((entry) => {
+      const parts = entry.split(';');
+      const cookiePart = parts[0];
+      return cookiePart;
+    }).join(';');
+}
 
 const setXCSRFHeader = (response) => {
   let cookies = response.headers.get('set-cookie');
@@ -29,17 +43,17 @@ const login = async () => {
     method: 'POST',
     headers: {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-      'Accept': 'application/json, text/plain, */*',
-      'Referer': `https://${SUBDOMAIN}.saas.appdynamics.com/controller/`,
+      'Accept': '*/*',
       'Connection': 'keep-alive',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Cache-Control': 'no-cache'
     },
     body: params
   });
 
   if(response.ok){
     console.log('Login successful.')
-    setXCSRFHeader(response)
+    storeCookies(response)
     return response
   }
   else{
@@ -50,16 +64,69 @@ const login = async () => {
   console.log(response)
 }
 
-const getServerKeys = async () => {
-  console.log(`Getting server keys...`)
+const saveFile = async (data) => {
+  await fs.writeFile('data.json', JSON.stringify(data, null, 2) , 'utf-8');
+}
+
+const checkProcess = (processes, processName) => {
+  let found = _.find(processes, function(o) { return o.processClass == 'java'; });
+
+  if(_.size(found) > 0){
+    return true
+  }
+  else{
+    return false;
+  }
+}
+
+const getMatchingProcesses = async () => {
+  let serverMatches = [];
+
+  const keys = JSON.parse(await fs.readFile('data.json', 'utf-8'));
+
+  /// Loop here
+
+  for (const key of keys){
+    const processes = await servers.processes(ACCOUNT_NAME, COOKIES, key.machineId);
+    console.log(processes);
+
+
+    //const javaFound = checkProcess(processes, 'java');
+
+    // if(javaFound){
+    //   serverMatches.push({
+    //     serverName: key.serverName,
+    //     serverId: key.machineId,
+    //     language: 'java'
+    //   })
+    // }
+  }
+
+  //console.log(serverMatches)
 }
 
 const main = async () => {
   try {
     await login()
 
-    // Get all server keys
-    const serverKeys = await getServerKeys()
+
+    //Get all server keys
+    // const keys = await servers.list(ACCOUNT_NAME, COOKIES);
+    // console.log(`${_.size(keys)} servers found.`)
+    // console.log(keys);
+    //
+    // await saveFile(keys);
+
+    //await getMatchingProcesses()
+
+    await servers.processes(ACCOUNT_NAME, COOKIES, 746007, XCSRFHEADER);
+    await servers.processes(ACCOUNT_NAME, COOKIES, 746007, XCSRFHEADER);
+
+
+
+
+    //const processes = await servers.processes(ACCOUNT_NAME, COOKIES, 746007);
+
     // const metricNames = await getMetrics()
     //
     // // Create New Metrics
