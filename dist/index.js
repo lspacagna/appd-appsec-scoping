@@ -35,17 +35,19 @@ var storeCookies = function storeCookies(response) {
 
 var login = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-    var params, response;
+    var base64password, params, response;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('Logging in...');
+            console.log('Logging in...'); // Base64 encode password
+
+            base64password = Buffer.from(_config["default"].password).toString('base64');
             params = new _url.URLSearchParams();
             params.append('userName', _config["default"].userName);
-            params.append('password', _config["default"].password);
+            params.append('password', base64password);
             params.append('accountName', _config["default"].accountName);
-            _context.next = 7;
+            _context.next = 8;
             return (0, _nodeFetch["default"])("https://".concat(_config["default"].subdomain, ".saas.appdynamics.com/controller/auth?action=login"), {
               method: 'POST',
               headers: {
@@ -58,23 +60,23 @@ var login = /*#__PURE__*/function () {
               body: params
             });
 
-          case 7:
+          case 8:
             response = _context.sent;
 
             if (!response.ok) {
-              _context.next = 13;
+              _context.next = 14;
               break;
             }
 
             console.log('Login successful.');
             storeCookies(response);
-            _context.next = 14;
+            _context.next = 15;
             break;
 
-          case 13:
+          case 14:
             throw new Error("Login failed - check login details - ".concat(response.statusText, " ").concat(response.status));
 
-          case 14:
+          case 15:
           case "end":
             return _context.stop();
         }

@@ -17,9 +17,13 @@ const storeCookies = (response) => {
 const login = async () => {
   console.log('Logging in...')
 
+
+  // Base64 encode password
+  let base64password = Buffer.from(constants.password).toString('base64');
+
   const params = new URLSearchParams();
   params.append('userName', constants.userName);
-  params.append('password', constants.password);
+  params.append('password', base64password);
   params.append('accountName', constants.accountName);
 
   const response = await fetch(`https://${constants.subdomain}.saas.appdynamics.com/controller/auth?action=login`, {
