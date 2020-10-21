@@ -101,7 +101,7 @@ var checkProcess = function checkProcess(processes, processName) {
 
 var getMatchingProcesses = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(keys) {
-    var serverMatches, _iterator, _step, key, processes, processFound;
+    var serverMatches, count, _iterator, _step, key, processes, processFound;
 
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
@@ -109,22 +109,25 @@ var getMatchingProcesses = /*#__PURE__*/function () {
           case 0:
             serverMatches = []; // loop through all server keys
 
+            count = 1;
             _iterator = _createForOfIteratorHelper(keys);
-            _context2.prev = 2;
+            _context2.prev = 3;
 
             _iterator.s();
 
-          case 4:
+          case 5:
             if ((_step = _iterator.n()).done) {
-              _context2.next = 15;
+              _context2.next = 18;
               break;
             }
 
             key = _step.value;
-            _context2.next = 8;
+            console.log("[".concat(count, "/").concat(_lodash["default"].size(keys), "]: Getting processes for ").concat(key.machineId, "...")); // get all processes for each key
+
+            _context2.next = 10;
             return _servers["default"].processes(key.machineId);
 
-          case 8:
+          case 10:
             processes = _context2.sent;
             // check list of processes for process search term
             processFound = checkProcess(processes, _constants["default"].processSearchTerm);
@@ -136,44 +139,45 @@ var getMatchingProcesses = /*#__PURE__*/function () {
                 machineId: key.machineId,
                 language: _constants["default"].processSearchTerm
               });
-            } // stagger requests to prevent hitting API rate limiter
+            }
 
+            count++; // stagger requests to prevent hitting API rate limiter
 
-            _context2.next = 13;
+            _context2.next = 16;
             return new Promise(function (resolve) {
               return setTimeout(resolve, _constants["default"].requestDelay);
             });
 
-          case 13:
-            _context2.next = 4;
+          case 16:
+            _context2.next = 5;
             break;
 
-          case 15:
-            _context2.next = 20;
+          case 18:
+            _context2.next = 23;
             break;
-
-          case 17:
-            _context2.prev = 17;
-            _context2.t0 = _context2["catch"](2);
-
-            _iterator.e(_context2.t0);
 
           case 20:
             _context2.prev = 20;
+            _context2.t0 = _context2["catch"](3);
+
+            _iterator.e(_context2.t0);
+
+          case 23:
+            _context2.prev = 23;
 
             _iterator.f();
 
-            return _context2.finish(20);
+            return _context2.finish(23);
 
-          case 23:
+          case 26:
             return _context2.abrupt("return", serverMatches);
 
-          case 24:
+          case 27:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[2, 17, 20, 23]]);
+    }, _callee2, null, [[3, 20, 23, 26]]);
   }));
 
   return function getMatchingProcesses(_x) {
@@ -183,68 +187,74 @@ var getMatchingProcesses = /*#__PURE__*/function () {
 
 var getvCPUs = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(machines) {
-    var _iterator2, _step2, machine, vcpus;
+    var count, _iterator2, _step2, machine, vcpus;
 
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
             // loop through all machines running process
+            count = 1;
             _iterator2 = _createForOfIteratorHelper(machines);
-            _context3.prev = 1;
+            _context3.prev = 2;
 
             _iterator2.s();
 
-          case 3:
+          case 4:
             if ((_step2 = _iterator2.n()).done) {
-              _context3.next = 13;
+              _context3.next = 16;
               break;
             }
 
             machine = _step2.value;
-            _context3.next = 7;
+            console.log("[".concat(count, "/").concat(_lodash["default"].size(machines), "]: Getting vCPUs for ").concat(machine.machineId, "...")); // check how many vCPUs on this machine
+
+            _context3.next = 9;
             return _servers["default"].cpus(machine.machineId);
 
-          case 7:
+          case 9:
             vcpus = _context3.sent;
             // store in object for data export
             machine.vcpus = vcpus; // stagger requests to prevent hitting API rate limiter
 
-            _context3.next = 11;
+            _context3.next = 13;
             return new Promise(function (resolve) {
               return setTimeout(resolve, _constants["default"].requestDelay);
             });
 
-          case 11:
-            _context3.next = 3;
-            break;
-
           case 13:
-            _context3.next = 18;
+            count++;
+
+          case 14:
+            _context3.next = 4;
             break;
 
-          case 15:
-            _context3.prev = 15;
-            _context3.t0 = _context3["catch"](1);
-
-            _iterator2.e(_context3.t0);
+          case 16:
+            _context3.next = 21;
+            break;
 
           case 18:
             _context3.prev = 18;
+            _context3.t0 = _context3["catch"](2);
+
+            _iterator2.e(_context3.t0);
+
+          case 21:
+            _context3.prev = 21;
 
             _iterator2.f();
 
-            return _context3.finish(18);
+            return _context3.finish(21);
 
-          case 21:
+          case 24:
             return _context3.abrupt("return", machines);
 
-          case 22:
+          case 25:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 15, 18, 21]]);
+    }, _callee3, null, [[2, 18, 21, 24]]);
   }));
 
   return function getvCPUs(_x2) {

@@ -74,15 +74,14 @@ var getServerProcesses = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log("Getting processes for ".concat(machineId, "..."));
-            _context2.next = 3;
+            _context2.next = 2;
             return _requests["default"].get("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId, "/processes?timeRange=last_1_month.BEFORE_NOW.-1.-1.43200&limit=1000&sortBy=CLASS"));
 
-          case 3:
+          case 2:
             response = _context2.sent;
             return _context2.abrupt("return", response);
 
-          case 5:
+          case 4:
           case "end":
             return _context2.stop();
         }
@@ -102,15 +101,14 @@ var getServerCPUs = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log("Getting vCPUs for ".concat(machineId, "..."));
-            _context3.next = 3;
+            _context3.next = 2;
             return _requests["default"].get("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId));
 
-          case 3:
+          case 2:
             response = _context3.sent;
 
             if (!(response !== null)) {
-              _context3.next = 10;
+              _context3.next = 9;
               break;
             }
 
@@ -125,11 +123,11 @@ var getServerCPUs = /*#__PURE__*/function () {
 
             return _context3.abrupt("return", vcpus);
 
-          case 10:
+          case 9:
             console.log("Unable to get vCPUs on ".concat(machineId));
             return _context3.abrupt("return", 0);
 
-          case 12:
+          case 11:
           case "end":
             return _context3.stop();
         }

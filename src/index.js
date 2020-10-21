@@ -58,7 +58,11 @@ const getMatchingProcesses = async (keys) => {
   let serverMatches = [];
 
   // loop through all server keys
+  let count = 1;
+
   for (const key of keys){
+    console.log(`[${count}/${_.size(keys)}]: Getting processes for ${key.machineId}...`)
+
     // get all processes for each key
     const processes = await servers.processes(key.machineId);
 
@@ -75,6 +79,7 @@ const getMatchingProcesses = async (keys) => {
       })
     }
 
+    count++
     // stagger requests to prevent hitting API rate limiter
     await new Promise(resolve => setTimeout(resolve, constants.requestDelay));
   }
@@ -84,13 +89,18 @@ const getMatchingProcesses = async (keys) => {
 
 const getvCPUs = async (machines) => {
   // loop through all machines running process
+  let count = 1
+
   for (const machine of machines){
+    console.log(`[${count}/${_.size(machines)}]: Getting vCPUs for ${machine.machineId}...`)
     // check how many vCPUs on this machine
     const vcpus = await servers.cpus(machine.machineId)
     // store in object for data export
     machine.vcpus = vcpus
     // stagger requests to prevent hitting API rate limiter
     await new Promise(resolve => setTimeout(resolve, constants.requestDelay));
+
+    count++
   }
 
   return machines

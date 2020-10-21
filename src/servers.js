@@ -23,8 +23,6 @@ const getServerKeys = async () => {
 }
 
 const getServerProcesses = async (machineId) => {
-  console.log(`Getting processes for ${machineId}...`)
-
   const response = await requests.get(`https://${constants.subdomain}.saas.appdynamics.com/controller/sim/v2/user/machines/${machineId}/processes?timeRange=last_1_month.BEFORE_NOW.-1.-1.43200&limit=1000&sortBy=CLASS`)
   //console.log(`${_.size(response)} processes found on ${machineId}`)
 
@@ -32,8 +30,6 @@ const getServerProcesses = async (machineId) => {
 }
 
 const getServerCPUs = async (machineId) => {
-  console.log(`Getting vCPUs for ${machineId}...`)
-
   const response = await requests.get(`https://${constants.subdomain}.saas.appdynamics.com/controller/sim/v2/user/machines/${machineId}`)
 
   if(response !== null){
