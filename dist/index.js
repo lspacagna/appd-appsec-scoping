@@ -14,7 +14,7 @@ var _lodash = _interopRequireDefault(require("lodash"));
 
 var _servers = _interopRequireDefault(require("./servers.js"));
 
-var _constants = _interopRequireDefault(require("./constants.js"));
+var _config = _interopRequireDefault(require("../config.js"));
 
 var _asyncFile = _interopRequireDefault(require("async-file"));
 
@@ -26,7 +26,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var storeCookies = function storeCookies(response) {
   var raw = response.headers.raw()['set-cookie'];
-  _constants["default"].cookies = raw.map(function (entry) {
+  _config["default"].cookies = raw.map(function (entry) {
     var parts = entry.split(';');
     var cookiePart = parts[0];
     return cookiePart;
@@ -42,11 +42,11 @@ var login = /*#__PURE__*/function () {
           case 0:
             console.log('Logging in...');
             params = new _url.URLSearchParams();
-            params.append('userName', _constants["default"].userName);
-            params.append('password', _constants["default"].password);
-            params.append('accountName', _constants["default"].accountName);
+            params.append('userName', _config["default"].userName);
+            params.append('password', _config["default"].password);
+            params.append('accountName', _config["default"].accountName);
             _context.next = 7;
-            return (0, _nodeFetch["default"])("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/auth?action=login"), {
+            return (0, _nodeFetch["default"])("https://".concat(_config["default"].subdomain, ".saas.appdynamics.com/controller/auth?action=login"), {
               method: 'POST',
               headers: {
                 'User-Agent': 'AppSecurityScoping-tool',
@@ -130,14 +130,14 @@ var getMatchingProcesses = /*#__PURE__*/function () {
           case 10:
             processes = _context2.sent;
             // check list of processes for process search term
-            processFound = checkProcess(processes, _constants["default"].processSearchTerm);
+            processFound = checkProcess(processes, _config["default"].processSearchTerm);
 
             if (processFound) {
-              console.log("'".concat(_constants["default"].processSearchTerm, "' process found on ").concat(key.machineId, "."));
+              console.log("'".concat(_config["default"].processSearchTerm, "' process found on ").concat(key.machineId, "."));
               serverMatches.push({
                 serverName: key.serverName,
                 machineId: key.machineId,
-                language: _constants["default"].processSearchTerm
+                language: _config["default"].processSearchTerm
               });
             }
 
@@ -145,7 +145,7 @@ var getMatchingProcesses = /*#__PURE__*/function () {
 
             _context2.next = 16;
             return new Promise(function (resolve) {
-              return setTimeout(resolve, _constants["default"].requestDelay);
+              return setTimeout(resolve, _config["default"].requestDelay);
             });
 
           case 16:
@@ -219,7 +219,7 @@ var getvCPUs = /*#__PURE__*/function () {
 
             _context3.next = 13;
             return new Promise(function (resolve) {
-              return setTimeout(resolve, _constants["default"].requestDelay);
+              return setTimeout(resolve, _config["default"].requestDelay);
             });
 
           case 13:
@@ -273,10 +273,10 @@ var saveData = /*#__PURE__*/function () {
             return _asyncFile["default"].writeFile('data.json', JSON.stringify(data, null, 2), 'utf-8');
 
           case 3:
-            console.log("".concat(_lodash["default"].size(data), " machines with '").concat(_constants["default"].processSearchTerm, "' found."));
+            console.log("".concat(_lodash["default"].size(data), " machines with '").concat(_config["default"].processSearchTerm, "' found."));
             console.log("".concat(_lodash["default"].sumBy(data, function (o) {
               return o.vcpus;
-            }), " vCPUs across all machines running '").concat(_constants["default"].processSearchTerm, "'."));
+            }), " vCPUs across all machines running '").concat(_config["default"].processSearchTerm, "'."));
 
           case 5:
           case "end":

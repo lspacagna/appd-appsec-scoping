@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import { URLSearchParams } from 'url'
 import _ from 'lodash';
 import servers from './servers.js'
-import constants from './constants.js'
+import constants from '../config.js'
 import fs from 'async-file'
 
 const storeCookies = (response) => {

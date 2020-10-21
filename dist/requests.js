@@ -6,7 +6,7 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _constants = _interopRequireDefault(require("./constants.js"));
+var _config = _interopRequireDefault(require("../config.js"));
 
 var fetch = require('node-fetch');
 
@@ -23,9 +23,9 @@ var _get = /*#__PURE__*/function () {
               headers: {
                 'User-Agent': 'AppSecurityScoping-tool',
                 'Accept': '*/*',
-                'Host': "".concat(_constants["default"].subdomain, ".saas.appdynamics.com"),
+                'Host': "".concat(_config["default"].subdomain, ".saas.appdynamics.com"),
                 'Connection': 'keep-alive',
-                'cookie': _constants["default"].cookies,
+                'cookie': _config["default"].cookies,
                 'Cache-Control': 'no-cache'
               }
             });
@@ -74,10 +74,10 @@ var _post = /*#__PURE__*/function () {
               headers: {
                 'User-Agent': 'AppSecurityScoping-tool',
                 'Accept': '*/*',
-                'Host': "".concat(_constants["default"].subdomain, ".saas.appdynamics.com"),
+                'Host': "".concat(_config["default"].subdomain, ".saas.appdynamics.com"),
                 'Connection': 'keep-alive',
                 'Content-Type': 'application/json',
-                'cookie': _constants["default"].cookies,
+                'cookie': _config["default"].cookies,
                 'Cache-Control': 'no-cache'
               },
               body: JSON.stringify(body)

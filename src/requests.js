@@ -1,5 +1,5 @@
 const fetch = require('node-fetch')
-import constants from './constants.js'
+import constants from '../config.js'
 
 const get = async (url) => {
   const response = await fetch(url, {

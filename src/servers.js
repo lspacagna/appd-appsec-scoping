@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const moment = require('moment')
-import constants from './constants.js'
+import constants from '../config.js'
 import requests from './requests.js'
 import _ from 'lodash';
 

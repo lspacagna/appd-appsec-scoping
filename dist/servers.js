@@ -6,7 +6,7 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _constants = _interopRequireDefault(require("./constants.js"));
+var _config = _interopRequireDefault(require("../config.js"));
 
 var _requests = _interopRequireDefault(require("./requests.js"));
 
@@ -47,7 +47,7 @@ var getServerKeys = /*#__PURE__*/function () {
               }
             };
             _context.next = 5;
-            return _requests["default"].post("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/keys"), body);
+            return _requests["default"].post("https://".concat(_config["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/keys"), body);
 
           case 5:
             response = _context.sent;
@@ -75,7 +75,7 @@ var getServerProcesses = /*#__PURE__*/function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return _requests["default"].get("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId, "/processes?timeRange=last_1_month.BEFORE_NOW.-1.-1.43200&limit=1000&sortBy=CLASS"));
+            return _requests["default"].get("https://".concat(_config["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId, "/processes?timeRange=last_1_month.BEFORE_NOW.-1.-1.43200&limit=1000&sortBy=CLASS"));
 
           case 2:
             response = _context2.sent;
@@ -102,7 +102,7 @@ var getServerCPUs = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _requests["default"].get("https://".concat(_constants["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId));
+            return _requests["default"].get("https://".concat(_config["default"].subdomain, ".saas.appdynamics.com/controller/sim/v2/user/machines/").concat(machineId));
 
           case 2:
             response = _context3.sent;
