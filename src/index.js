@@ -43,10 +43,6 @@ const login = async () => {
   }
 }
 
-const saveFile = async (data) => {
-  await fs.writeFile('data.json', JSON.stringify(data, null, 2) , 'utf-8');
-}
-
 const checkProcess = (processes, processName) => {
   let found = _.find(processes, function(o) { return o.processClass == 'java'; });
 
@@ -58,42 +54,55 @@ const checkProcess = (processes, processName) => {
   }
 }
 
-const getMatchingProcesses = async (keys, process) => {
+const getMatchingProcesses = async (keys) => {
   let serverMatches = [];
 
+  // loop through all server keys
   for (const key of keys){
+    // get all processes for each key
     const processes = await servers.processes(key.machineId);
 
-    const javaFound = checkProcess(processes, process);
+    // check list of processes for process search term
+    const processFound = checkProcess(processes, constants.processSearchTerm);
 
-    if(javaFound){
+    if(processFound){
+      console.log(`'${constants.processSearchTerm}' process found on ${key.machineId}.`)
+
       serverMatches.push({
         serverName: key.serverName,
         machineId: key.machineId,
-        language: 'java'
+        language: constants.processSearchTerm
       })
     }
 
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // stagger requests to prevent hitting API rate limiter
+    await new Promise(resolve => setTimeout(resolve, constants.requestDelay));
   }
 
   return serverMatches
 }
 
 const getvCPUs = async (machines) => {
+  // loop through all machines running process
   for (const machine of machines){
+    // check how many vCPUs on this machine
     const vcpus = await servers.cpus(machine.machineId)
-
+    // store in object for data export
     machine.vcpus = vcpus
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // stagger requests to prevent hitting API rate limiter
+    await new Promise(resolve => setTimeout(resolve, constants.requestDelay));
   }
 
   return machines
 }
 
-const createSummary = async (machines) => {
-  console.log(`${_.size(machines)} machines with Java found.`)
-  console.log(`${_.sumBy(machines, function(o) { return o.vcpus; })} vCPUs across all Java machines.`)
+const saveData = async (data) => {
+  console.log(`Saving all data to 'data.json'...`)
+
+  await fs.writeFile('data.json', JSON.stringify(data, null, 2) , 'utf-8');
+
+  console.log(`${_.size(data)} machines with '${constants.processSearchTerm}' found.`)
+  console.log(`${_.sumBy(data, function(o) { return o.vcpus; })} vCPUs across all machines running '${constants.processSearchTerm}'.`)
 }
 
 const main = async () => {
@@ -101,12 +110,10 @@ const main = async () => {
     await login()
 
     const keys = await servers.list();
-    const javaMatches = await getMatchingProcesses(keys, 'java')
-    const vcpus = await getvCPUs(javaMatches)
+    const processMatches = await getMatchingProcesses(keys)
+    const vcpus = await getvCPUs(processMatches)
 
-    await saveFile(vcpus);
-
-    const summary = await createSummary(vcpus)
+    await saveData(vcpus);
 
   } catch (e) {
     console.error(e);
