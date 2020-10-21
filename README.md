@@ -4,6 +4,21 @@
 
 This tool connects to AppDynamics lists all servers monitored by AppD Server Analytics, checks which servers are running the specified process, and then calculates the number of vCPUs across these servers. This value can then be used to scope the number of licences required by AppD SecureApp.
 
+Once the process completes a file called data.json will be saved listing every server found running the specified process along with how many CPUs were found. The total number of vCPUs running the specified process will be printed to STDOUT.
+
+Example:
+```
+[
+  {
+    "serverName": "docker-desktop",
+    "machineId": 1472275,
+    "language": "java",
+    "vcpus": 8
+  }
+  ...
+]
+```
+
 ## Pre-requisites
 
 1. (Optional) Homebrew - for easier installation and management on MacOS
