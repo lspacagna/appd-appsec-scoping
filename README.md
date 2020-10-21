@@ -25,7 +25,7 @@ $ cd appd-appsec-scoping
 ### Build project
 
 ```
-npm run build
+$ npm run build
 ```
 
 ## Configuration
