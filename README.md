@@ -39,10 +39,22 @@ module.exports = {
   accountName: '',
   subdomain: '',
   processSearchTerm: 'java',
-  requestDelay: 300 // API call delay milliseconds to prevent rate throttling (default 300).
+  requestDelay: 300
 };
 ```
 
 Parameter | Function | Default Value
 --------- | -------- | -------------
-userName | user name used to access AppD controller - local login required | 
+userName | user name used to access AppD controller - local login required |
+password | password used to access AppD controller |
+accountName | AppD controller account name |
+subdomain | Subdomain to access controller xxxx.saas.appdynamics.com |
+processSearchTerm | Name of process to search for on each server | java
+requestDelay | No. ms delay in between each API call to prevent rate limiting | 300
+
+
+## Run
+
+```
+$ npm run run
+```
