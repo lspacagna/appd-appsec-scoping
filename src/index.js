@@ -1,49 +1,32 @@
-import nodeFetch from 'node-fetch'
-const fetch = require('fetch-cookie')(nodeFetch)
+import fetch from 'node-fetch'
 import { URLSearchParams } from 'url'
 import _ from 'lodash';
 import servers from './servers.js'
+import constants from './constants.js'
 import fs from 'async-file'
-
-const USERNAME = ''
-const PASSWORD = ''
-
-const ACCOUNT_NAME = ''
-const SUBDOMAIN = 'tpicap-dev'
-
-let XCSRFHEADER;
-
-let COOKIES;
 
 const storeCookies = (response) => {
   const raw = response.headers.raw()['set-cookie'];
-  COOKIES = raw.map((entry) => {
+  constants.cookies = raw.map((entry) => {
       const parts = entry.split(';');
       const cookiePart = parts[0];
       return cookiePart;
     }).join(';');
 }
 
-const setXCSRFHeader = (response) => {
-  let cookies = response.headers.get('set-cookie');
-  cookies = cookies.split("X-CSRF-TOKEN=")
-  cookies = cookies[1].split(";")
-  XCSRFHEADER = cookies[0]
-}
-
 const login = async () => {
   console.log('Logging in...')
 
   const params = new URLSearchParams();
-  params.append('userName', USERNAME);
-  params.append('password', PASSWORD);
-  params.append('accountName', ACCOUNT_NAME);
+  params.append('userName', constants.userName);
+  params.append('password', constants.password);
+  params.append('accountName', constants.accountName);
 
-  const response = await fetch(`https://${SUBDOMAIN}.saas.appdynamics.com/controller/auth?action=login`, {
+  const response = await fetch(`https://${constants.subdomain}.saas.appdynamics.com/controller/auth?action=login`, {
     method: 'POST',
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36',
-      'Accept': '*/*',
+      'User-Agent': 'AppSecurityScoping-tool',
+      'Accept': 'application/json, text/plain, */*',
       'Connection': 'keep-alive',
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cache-Control': 'no-cache'
@@ -54,14 +37,10 @@ const login = async () => {
   if(response.ok){
     console.log('Login successful.')
     storeCookies(response)
-    return response
   }
   else{
-    console.log(response)
-    throw new Error(response.statusText);
+    throw new Error(`Login failed - check login details - ${response.statusText} ${response.status}`);
   }
-
-  console.log(response)
 }
 
 const saveFile = async (data) => {
@@ -79,59 +58,55 @@ const checkProcess = (processes, processName) => {
   }
 }
 
-const getMatchingProcesses = async () => {
+const getMatchingProcesses = async (keys, process) => {
   let serverMatches = [];
 
-  const keys = JSON.parse(await fs.readFile('data.json', 'utf-8'));
-
-  /// Loop here
-
   for (const key of keys){
-    const processes = await servers.processes(ACCOUNT_NAME, COOKIES, key.machineId);
-    console.log(processes);
+    const processes = await servers.processes(key.machineId);
 
+    const javaFound = checkProcess(processes, process);
 
-    //const javaFound = checkProcess(processes, 'java');
+    if(javaFound){
+      serverMatches.push({
+        serverName: key.serverName,
+        machineId: key.machineId,
+        language: 'java'
+      })
+    }
 
-    // if(javaFound){
-    //   serverMatches.push({
-    //     serverName: key.serverName,
-    //     serverId: key.machineId,
-    //     language: 'java'
-    //   })
-    // }
+    await new Promise(resolve => setTimeout(resolve, 300));
   }
 
-  //console.log(serverMatches)
+  return serverMatches
+}
+
+const getvCPUs = async (machines) => {
+  for (const machine of machines){
+    const vcpus = await servers.cpus(machine.machineId)
+
+    machine.vcpus = vcpus
+    await new Promise(resolve => setTimeout(resolve, 300));
+  }
+
+  return machines
+}
+
+const createSummary = async (machines) => {
+  console.log(`${_.size(machines)} machines with Java found.`)
+  console.log(`${_.sumBy(machines, function(o) { return o.vcpus; })} vCPUs across all Java machines.`)
 }
 
 const main = async () => {
   try {
     await login()
 
+    const keys = await servers.list();
+    const javaMatches = await getMatchingProcesses(keys, 'java')
+    const vcpus = await getvCPUs(javaMatches)
 
-    //Get all server keys
-    // const keys = await servers.list(ACCOUNT_NAME, COOKIES);
-    // console.log(`${_.size(keys)} servers found.`)
-    // console.log(keys);
-    //
-    // await saveFile(keys);
+    await saveFile(vcpus);
 
-    //await getMatchingProcesses()
-
-    await servers.processes(ACCOUNT_NAME, COOKIES, 746007, XCSRFHEADER);
-    await servers.processes(ACCOUNT_NAME, COOKIES, 746007, XCSRFHEADER);
-
-
-
-
-    //const processes = await servers.processes(ACCOUNT_NAME, COOKIES, 746007);
-
-    // const metricNames = await getMetrics()
-    //
-    // // Create New Metrics
-    // await createMetrics(hotelList, metricNames)
-
+    const summary = await createSummary(vcpus)
 
   } catch (e) {
     console.error(e);
